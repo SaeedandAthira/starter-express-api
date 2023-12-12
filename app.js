@@ -1,11 +1,11 @@
 const express = require('express');
+const session = require('express-session');
+const { validationResult, query } = require('express-validator');
 const bodyParser = require('body-parser');
 const { ObjectId } = require('mongodb');
-const { validationResult, query } = require('express-validator');
 const db = require('./module/movieModule');
 
 const app = express();
-const router = express.Router();
 
 const exphbs = require('express-handlebars');
 const path = require('path');
@@ -16,6 +16,8 @@ const dotenv = require('dotenv').config();
 const cookieParser = require('cookie-parser');
 const secretKey = process.env.JWT_SECRET;
 var temp = 1;
+var isAuthenticatedBool = false;
+
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -23,30 +25,60 @@ app.use(bodyParser.json({ type: 'application/vnd.api+json' }));
 app.use(express.static(path.join(__dirname, 'public')));
 app.set('views', path.join(__dirname, 'views'));
 app.use(cookieParser());
+app.use(
+    session({
+        secret: secretKey,
+        resave: false,
+        saveUninitialized: true,
+        cookie: {
+            secure: false,
+            httpOnly: true,
+            maxAge: 3600000,
+        },
+    })
+);
 
 const authenticateUser = (req, res, next) => {
-    const token = req.cookies.token;
-    try {
-        if (token) {
-            const decoded = verifyToken(token);
-            console.log('Decoded Token:', decoded);
-            req.userId = decoded.userId;
-            req.username = decoded.username;
-            res.locals.user = { userId: decoded.userId };
-            res.locals.username = { username: decoded.username };
-        } else {
-            res.locals.user = null; 
-        }
+    if (req.session.userId) {
+        // User is authenticated
+        res.locals.user = { userId: req.session.userId };
+        res.locals.username = { username: req.session.username };
+        isAuthenticatedBool = true
         next();
-    } catch (error) {
-        console.log('Token verification failed. Returning 401.');
-        return res.status(401).json({ message: 'Invalid token' });
+    } else {
+        res.locals.user = null;
+        isAuthenticatedBool = false;
+        next();
     }
 };
 
-const verifyToken = (token) => {
-    return jwt.verify(token, secretKey);
+const sessionTimeout = (maxAge) => {
+    return (req, res, next) => {
+        if (req.session && req.session.userId) {
+            const now = Date.now();
+            const lastActivity = req.session.lastActivity || now;
+            if (now - lastActivity > maxAge) {
+                req.session.destroy(() => {
+                    res.clearCookie('token');
+                    res.locals.user = null;
+                    res.redirect('/login');
+                });
+            } else {
+                req.session.lastActivity = now;
+                next();
+            }
+        } else {
+            next();
+        }
+    };
 };
+function isAuthenticated(req, res, next) {
+    if (isAuthenticatedBool) {
+      return next();
+    }
+    res.redirect('/login');
+}
+app.use(sessionTimeout(3600000));
 app.use(authenticateUser);
 
 // Set the view engine to handlebars
@@ -93,9 +125,9 @@ app.engine('hbs', exphbs.engine({
             console.log(message);
         },
         notnull: function (variable) {
-            if(variable != null){
+            if (variable != null) {
                 return true;
-            }else{
+            } else {
                 return false;
             }
         }
@@ -150,7 +182,7 @@ db.initialize(database.url)
                 });
             } catch (error) {
                 console.error(error);
-                res.status(500).json({ error: 'Internal Server Error' });
+                res.render( 'error', {message1: 'Internal Server Error' });
             }
         });
 
@@ -165,23 +197,23 @@ db.initialize(database.url)
                 // Check if movieId is defined and not empty
                 if (!/^[0-9a-fA-F]{24}$/.test(movieId)) {
                     console.log('Invalid movieId:', movieId);
-                    return res.status(400).json({ error: 'Invalid movieId format' });
+                    return res.render( 'error', {message1: 'Invalid movieId format', message2: 'Try Again!!'});
                 }
                 const objectId = new ObjectId(movieId);
                 console.log('movieId:', movieId);
                 const movies = await db.getMovieById(objectId);
                 if (!movies) {
-                    return res.status(404).json({ error: 'Movie not found' });
+                    return res.render( 'error', {message1: 'Movie not found', message2: 'Try somthing else :)!!' });
                 }
                 console.log(movies);
                 res.render('onemovie', { movies: movies });
             } catch (error) {
                 console.error(error);
-                res.status(500).json({ error: 'Internal Server Error' });
+                res.render( 'error', {message1:  'Internal Server Error' });
             }
         });
 
-        app.get('/api/addmovie', (req, res) => {
+        app.get('/api/addmovie', isAuthenticated, (req, res) => {
             res.render('addmovies');
         });
         // Add a new movie using a partial for the insert form
@@ -193,14 +225,14 @@ db.initialize(database.url)
                 return res.render('successfull', { message: 'Added', movieId: movieId });
             } catch (error) {
                 console.error(error);
-                res.status(500).json({ error: 'Internal Server Error' });
+                res.render( 'error', {message1:  'Internal Server Error' });
             }
         });
 
-        app.get('/api/update/movies', (req, res) => {
+        app.get('/api/update/movies', isAuthenticated, (req, res) => {
             res.render('update');
         });
-        app.post('/api/movies/update', async (req, res) => {
+        app.post('/api/movies/update', isAuthenticated, async (req, res) => {
             try {
                 const movieId = req.body.id;
                 const data = { ...req.body };
@@ -208,38 +240,38 @@ db.initialize(database.url)
                 if (updatedMovie) {
                     return res.render('successfull', { message: 'Updated, ', movieId: updatedMovie._id });
                 } else {
-                    return res.status(404).json({ success: false, error: 'Movie not found' });
+                    return res.render( 'error', {message1:  'Movie not found' });
                 }
             } catch (error) {
                 console.error(error);
-                res.status(500).json({ error: 'Internal Server Error' });
+                res.render( 'error', {message1: 'Internal Server Error' });
             }
         });
 
         //Delete
-        app.get('/api/delete/movie', (req, res) => {
+        app.get('/api/delete/movie', isAuthenticated, (req, res) => {
             res.render('delete');
         });
-        app.post('/api/movies/delete', async (req, res) => {
+        app.post('/api/movies/delete', isAuthenticated, async (req, res) => {
             try {
                 const movieId = req.body.id;
                 const deletedMovie = await db.deleteMovieById(movieId);
                 if (deletedMovie) {
                     return res.render('successfull', { message: 'Delete, ', movieId: movieId });
                 } else {
-                    return res.status(404).json({ success: false, error: 'Movie not found' });
+                    return res.render( 'error', {message1: 'Movie not found' });
                 }
             } catch (error) {
                 console.error(error);
-                res.status(500).json({ error: 'Internal Server Error' });
+                res.render( 'error', {message1: 'Internal Server Error' });
             }
         });
 
-        app.get('/register', (req, res) => {
+        app.get('/register', authenticateUser, (req, res) => {
             res.render('register');
         });
         // User registration
-        app.post('/auth/register', async (req, res) => {
+        app.post('/auth/register', authenticateUser, async (req, res) => {
             try {
                 const { username, password } = req.body;
                 const hashedPassword = await bcrypt.hash(password, 10);
@@ -248,9 +280,9 @@ db.initialize(database.url)
                     password: hashedPassword,
                 });
                 await user.save();
-                res.status(201).json({ message: 'User registered successfully' });
+                res.render('successfull', { message: 'User Registration' });
             } catch (error) {
-                res.status(500).json({ error: error.message });
+                res.render( 'error', {message1: error.message });
             }
         });
 
@@ -263,34 +295,38 @@ db.initialize(database.url)
                 // Find the user by username
                 user = await User.findOne({ username });
                 if (!user) {
-                    return res.status(401).json({ message: 'Invalid credentials' });
+                    return res.render( 'error', {message1: 'Invalid credentials' });
                 }
                 // Compare passwords
                 const isPasswordValid = await bcrypt.compare(password, user.password);
                 if (!isPasswordValid) {
-                    return res.status(401).json({ message: 'Invalid credentials' });
+                    return res.render( 'error', {message1: 'Invalid credentials' });
                 }
                 // Generate a JWT token
                 const token = jwt.sign({ userId: user._id, username: user.username }, secretKey);
                 // Set the token as a cooki
                 const oneHourFromNow = new Date();
                 oneHourFromNow.setTime(oneHourFromNow.getTime() + 60 * 60 * 1000); // 1 hour in milliseconds
-        
+
                 res.cookie('token', token, {
                     expires: oneHourFromNow,
-                    httpOnly: true, // Optional: make the cookie accessible only through the HTTP(S) protocol
+                    httpOnly: true,
                 });
+                req.session.userId = user._id;
+                req.session.username = user.username;
                 res.redirect('/api/movies');
             }
-             catch (error) {
-                res.status(500).json({ error: error.message });
+            catch (error) {
+                res.render( 'error', {message1: error.message });
             }
         });
         app.get('/logout', (req, res) => {
-            res.clearCookie('token');
-            res.locals.user = null;
-            res.redirect('/api/movies');
-          });
+            req.session.destroy(() => {
+                res.clearCookie('token');
+                res.locals.user = null;
+                res.redirect('/api/movies');
+            });
+        });
         // Start the server
         app.listen(6500, () => {
             console.log("App listening on port : " + 6500);
@@ -300,22 +336,3 @@ db.initialize(database.url)
         // Handle initialization error
         console.error("MongoDB connection error:", error);
     });
-
-function pageGreaterThanOne(page) {
-    return page > 1;
-}
-
-// Function to check if the current page is less than the total number of pages
-function pageLessThanTotal(page, totalPages) {
-    return page < totalPages;
-}
-
-// Function to decrement the current page
-function pageDecrement(page) {
-    return Math.max(page - 1, 1);
-}
-
-// Function to increment the current page
-function pageIncrement(page, totalPages) {
-    return Math.min(page + 1, totalPages);
-}

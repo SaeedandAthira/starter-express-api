@@ -1,3 +1,33 @@
+<style>
+body {
+    background-color: black;
+    color: white;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh; 
+    margin: 0;
+}
+body::before {
+    content: '';
+    background-image: url('https://media.giphy.com/media/nagxKKFv9vVCj2mB4J/giphy.gif');
+    background-repeat: no-repeat;
+    background-size: contain; 
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    opacity: 0.5;
+    z-index: -1; 
+}
+
+    iframe {
+        border: none;
+    }
+</style>
+
 {{#if movieId}}
 <h3>Movie with ID: {{movieId}}</h3>
 {{/if}}
