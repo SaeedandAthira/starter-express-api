@@ -1,0 +1,16 @@
+<h1>Delete Confirmation</h1>
+
+<form action="/api/movies/delete" method="POST">
+    <p>Are you sure you want to delete this movie?</p>
+    <p>Movie ID: </p>
+    <input type="text" name="id" required>
+    <button type="submit" onclick="confirmDelete()">Yes, Delete</button>
+</form>
+<script>
+  function confirmDelete() {
+    var result = confirm("Confirm?");
+    if (result) {
+      document.querySelector('form').submit();
+    }
+  }
+</script>

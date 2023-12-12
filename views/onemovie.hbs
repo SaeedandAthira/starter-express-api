@@ -1,0 +1,18 @@
+  <div>
+    <img src="{{movies.poster}}" alt="{{movies.title}} Poster">
+    <h1>{{movies.title}}</h1>
+    <p><strong>Plot:</strong> {{movies.plot}}</p>
+    <p><strong>Genres:</strong> {{joinArray movies.genres ', '}}</p>
+    <p><strong>Runtime:</strong> {{movies.runtime}} minutes</p>
+    <p><strong>Rated:</strong> {{movies.rated}}</p>
+    <p><strong>Release Date:</strong> {{movies.released}}</p>
+    <p><strong>Director:</strong> {{joinArray movies.directors ', '}}</p>
+    <p><strong>Writers:</strong> {{joinArray movies.writers ', '}}</p>
+    <p><strong>Cast:</strong> {{joinArray movies.cast ', '}}</p>
+    <p><strong>IMDb Rating:</strong> {{movies.imdb.rating}}/10 ({{movies.imdb.votes}} votes)</p>
+    <p><strong>Rotten Tomatoes Rating:</strong> {{movies.tomatoes.critic.rating}}/100 ({{movies.tomatoes.critic.numReviews}} reviews)</p>
+    <p><strong>Tomatoes Viewer Rating:</strong> {{movies.tomatoes.viewer.rating}}/5 ({{movies.tomatoes.viewer.numReviews}} reviews)</p>
+    <p><strong>Tomatoes Consensus:</strong> {{movies.tomatoes.consensus}}</p>
+    <p><strong>Awards:</strong> {{movies.awards.text}}</p>
+    <br>
+  </div>

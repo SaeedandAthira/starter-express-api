@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{movies.length}} Movies</title>
+    <style>
+        .movie-card {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin: 10px;
+            max-width: 800px;
+
+        }
+
+        .movie-poster {
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>{{movies.length}} Movies</h1>
+    {{#if (and (gt totalPages) (gt movies.length))}}
+    <a href="/api/movies/?page={{add page}}&perPage={{perPage}}&title={{title}}">
+    <button type="submit">Next</button></a><br><br>
+    <b>Page {{page}} of Page {{totalPages}}</b>
+    {{else}}
+    <p>No movies found further.</p>
+    <a href="/api/movies/?page=1&perPage={{perPage}}&title={{title}}">
+    <button type="submit">Next</button></a><br><br>
+    <b>Press next to go back to Page 1</b>
+    {{/if}}
+
+    {{#if movies.length}}
+    {{#each movies}}
+    <div class="movie-card">
+        <h2>{{this.title}}</h2>
+        <img class="movie-poster" src="{{this.poster}}" alt="{{this.title}} Poster " style="max-width: 300px;">
+        <p>Plot: {{plot}}</p>
+        <p>Genres: {{joinArray genres ', '}}</p>
+
+
+        <p>Runtime: {{this.runtime}} minutes</p>
+        <p>Cast: {{joinArray this.cast ', '}}</p>
+        <p>Languages: {{joinArray this.languages ', '}}</p>
+        <p>Released: {{this.released}}</p>
+        <p>Directors: {{joinArray this.directors ', '}}</p>
+        <p>Rated: {{this.rated}}</p>
+
+        <!-- Awards -->
+        <p>Awards:</p>
+        <ul>
+            {{#if this.awards}}
+            {{#each this.awards}}
+            <li>{{@key}}: {{this}}</li>
+            {{/each}}
+            {{else}}
+            <li>No awards</li>
+            {{/if}}
+        </ul>
+
+        <!-- IMDB -->
+        <p>IMDB:</p>
+        <ul>
+            {{#if this.imdb}}
+            {{#each this.imdb}}
+            <li>{{@key}}: {{this}}</li>
+            {{/each}}
+            {{else}}
+            <li>No IMDB information</li>
+            {{/if}}
+        </ul>
+
+        <!-- Tomatoes -->
+        <p>Tomatoes:</p>
+        <ul>
+            {{#if this.tomatoes}}
+            {{#each this.tomatoes}}
+            {{#if @key}}
+            <!-- If it's an array, loop through the items -->
+            {{#each this}}
+            <li>{{@key}}: {{this}}</li>
+            {{/each}}
+            {{else}}
+            <!-- If it's not an array, display the single value -->
+            <li>{{@key}}: {{this}}</li>
+            {{/if}}
+            {{/each}}
+            {{else}}
+            <li>No Tomatoes information</li>
+            {{/if}}
+        </ul>
+
+        <!-- Other details -->
+        <p>Year: {{this.year}}</p>
+        <p>Number of Comments: {{this.num_mflix_comments}}</p>
+
+        <!-- Add more HTML to display other details as needed -->
+    </div>
+    <hr>
+    {{/each}}
+
+
+    <!-- Pagination -->
+    <div>
+
+
+
+
+    </div>
+    {{else}}
+    <p>No movies found.</p>
+    {{/if}}
+</body>
+
+</html>

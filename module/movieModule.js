@@ -15,8 +15,9 @@ const initialize = async (connectionString) => {
 // Create a new Movie in the collection
 const addNewMovie = async (data) => {
     try {
-        await Movie.create(data);
+        const newMovie = await Movie.create(data);
         console.log('New Movie added successfully');
+        return newMovie._id; 
     } catch (error) {
         console.error('Error adding new Movie:', error);
         throw error;
@@ -33,6 +34,17 @@ const getAllMovies = async (page, perPage, title) => {
         return movies;
     } catch (error) {
         console.error('Error fetching movies:', error);
+        throw error;
+    }
+};
+
+// Return the total count of Movies
+const getTotalMoviesCount = async () => {
+    try {
+        const totalMovies = await Movie.countDocuments();
+        return totalMovies;
+    } catch (error) {
+        console.error('Error fetching total movies count:', error);
         throw error;
     }
 };
@@ -64,15 +76,18 @@ const deleteMovieById = async (Id) => {
     try {
         await Movie.deleteOne({ _id: Id });
         console.log('Movie deleted successfully');
+        return true;
     } catch (error) {
         console.error('Error deleting movie by ID:', error);
         throw error;
     }
 };
+
 module.exports = {
     initialize,
     addNewMovie,
     getAllMovies,
+    getTotalMoviesCount,
     getMovieById,
     updateMovieById,
     deleteMovieById,
