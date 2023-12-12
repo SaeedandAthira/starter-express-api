@@ -327,6 +327,10 @@ db.initialize(database.url)
                 res.redirect('/api/movies');
             });
         });
+
+        app.get('*', (req, res) => {
+            res.render('error', {message1: 'Oops! I think you are lost!!', message2: 'I hope you find your way out :)'})
+        });
         // Start the server
         app.listen(6500, () => {
             console.log("App listening on port : " + 6500);
