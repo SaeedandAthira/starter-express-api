@@ -1,10 +1,19 @@
 body {
-    margin: 0 auto;
+    margin: 0;
     font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
-    position: relative;
-    top: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+h1{
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
+.welcome-conatiner{
+    background: url('https://media.giphy.com/media/kHs1lBhZWaK5rj7lt3/giphy.gif');
+}
 header {
     background: url('/images/headerback.jpg') repeat;
     color: #fff;
@@ -14,7 +23,6 @@ header {
     top: 0;
     z-index: 1000;
     margin-top: -10px;
-    margin-bottom: 50px;
 }
 
 nav {
@@ -36,10 +44,14 @@ nav a {
 
 main {
     padding: 2em;
+    margin-top: 100px;
+    margin-bottom: 50px;
+    position: relative;
 }
 
 footer {
-    background: url('/images/footerback.jpg') repeat;
+    background: url('/images/footerback.jpg');
+    background-color: blue;
     color: #fff;
     padding: 1em;
     text-align: center;
@@ -54,6 +66,9 @@ form {
     padding: 1em;
     border: 1px solid #ccc;
     border-radius: 5px;
+    width: 80%;
+    margin-left: 50px;
+    margin-right: 400px;
 }
 
 label {
@@ -70,10 +85,64 @@ textarea {
 }
 
 button {
-    background-color: #3498db;
+    background-color: #ff2929;
     color: #fff;
-    padding: 0.5em 1em;
+    padding: 1em 3em;
     border: none;
-    border-radius: 3px;
+    border-radius: 8px;
     cursor: pointer;
+}
+
+.doyou{
+    position: relative;
+    margin-left: 50px;
+}
+.container {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.page_404 {
+    padding: 40px 0;
+}
+
+.four_zero_four_bg {
+    background-image: url('https://cdn.dribbble.com/users/285475/screenshots/2083086/dribbble_1.gif');
+    height: 400px;
+    width: 100%;
+    background-position: center;
+}
+
+.four_zero_four_bg h1 {
+    font-size: 80px;
+    margin: 0;
+    color: #ff0000;
+}
+
+.contant_box_404 {
+    margin-top: -50px;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.contant_box_404 h2 {
+    font-size: 24px;
+    color: #333;
+}
+
+.contant_box_404 p {
+    font-size: 16px;
+    color: #666;
+}
+
+.link_404 {
+    color: #fff;
+    padding: 10px 20px;
+    background: #39ac31;
+    margin: 20px 0;
+    display: inline-block;
+    text-decoration: none;
+    border-radius: 5px;
 }

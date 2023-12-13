@@ -1,6 +1,3 @@
-<!DOCTYPE html>
-<html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,7 +10,6 @@
             max-width: 800px;
 
         }
-
         .movie-poster {
             max-width: 100%;
             height: auto;
@@ -23,14 +19,16 @@
 
 <body>
     <h1>{{movies.length}} Movies</h1>
+
     {{#if (and (gt totalPages) (gt movies.length))}}
     <a href="/api/movies/?page={{add page}}&perPage={{perPage}}&title={{title}}">
-    <button type="submit">Next</button></a><br><br>
+        <button type="submit">Next</button></a><br><br>
     <b>Page {{page}} of Page {{totalPages}}</b>
     {{else}}
+    
     <p>No movies found further.</p>
     <a href="/api/movies/?page=1&perPage={{perPage}}&title={{title}}">
-    <button type="submit">Next</button></a><br><br>
+        <button type="submit">Next</button></a><br><br>
     <b>Press next to go back to Page 1</b>
     {{/if}}
 
@@ -38,11 +36,17 @@
     {{#each movies}}
     <div class="movie-card">
         <h2>{{this.title}}</h2>
-        <img class="movie-poster" src="{{this.poster}}" alt="{{this.title}} Poster " style="max-width: 300px;">
+
+        <!-- showing no bg image when db has no poster -->
+        {{log this.MovieId}}
+        {{log this.poster}}
+        {{log this.title}}
+        {{log this.onerror}}
+        {{log '-----'}}
+        <img class="movie-poster" src="{{this.poster}}" alt="{{this.title}} Poster " onerror="this.onerror=null;this.src='/images/nopic.png';" style="max-width: 300px;">
+
         <p>Plot: {{plot}}</p>
         <p>Genres: {{joinArray genres ', '}}</p>
-
-
         <p>Runtime: {{this.runtime}} minutes</p>
         <p>Cast: {{joinArray this.cast ', '}}</p>
         <p>Languages: {{joinArray this.languages ', '}}</p>
@@ -94,26 +98,14 @@
             {{/if}}
         </ul>
 
-        <!-- Other details -->
         <p>Year: {{this.year}}</p>
         <p>Number of Comments: {{this.num_mflix_comments}}</p>
 
-        <!-- Add more HTML to display other details as needed -->
     </div>
     <hr>
     {{/each}}
 
-
-    <!-- Pagination -->
-    <div>
-
-
-
-
-    </div>
     {{else}}
     <p>No movies found.</p>
     {{/if}}
 </body>
-
-</html>

@@ -149,6 +149,10 @@ db.initialize(database.url)
             res.render('formGetMovie');
         });
 
+        app.get('/', (req, res) => {
+            res.render('welcome');
+        });
+
         // Define API routes
         app.get('/api/movies', [
             query('page').optional().isInt().toInt(),
@@ -191,9 +195,7 @@ db.initialize(database.url)
         });
         app.get('/api/onemovie', async (req, res) => {
             try {
-                console.log('saeed')
                 const movieId = req.query.id;
-
                 // Check if movieId is defined and not empty
                 if (!/^[0-9a-fA-F]{24}$/.test(movieId)) {
                     console.log('Invalid movieId:', movieId);
