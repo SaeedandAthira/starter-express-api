@@ -1,31 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/styles/main.css">
-    <title><a href="/welcome">MovieFlix</a></title>
+    {{title}}
 </head>
+
 <body>
     <header>
-        <h1>MovieFlix</h1>
+        <h1><a class="titleHead" href="/">MovieFlix</a></h1>
     </header>
     <nav>
-    {{#if user}}
+        {{#if user}}
         <a href="/api/movies">All Movie Details</a>
         <a href="/api/moviesform">Search Movies</a>
-        <a href="/api/findmoviebyid">Find Movie By Id</a> 
+        <a href="/api/findmoviebyid">Find Movie By Id</a>
         <a href="/api/addmovie">Add Movie</a>
         <a href="/api/update/movies">Update Movie</a>
         <a href="/api/delete/movie">Delete Movie</a>
         <a href="#" onclick="confirmLogout('{{username.username}}')">Hello, {{username.username}}</a>
-    {{else}}
+        {{else}}
         <a href="/api/movies">All Movie Details</a>
         <a href="/api/moviesform">Search Movies</a>
-        <a href="/api/findmoviebyid">Find Movie By Id</a> 
+        <a href="/api/findmoviebyid">Find Movie By Id</a>
         <a href="/login">Login</a>
         <a href="/register">Register</a>
-    {{/if}}
+        {{/if}}
     </nav>
     <main>
         {{{body}}} <!-- This is where the content of your different routes will be inserted -->
@@ -35,14 +37,15 @@
     </footer>
 </body>
 <script>
-function confirmLogout(username) {
-    var confirmation = confirm("Are you sure you want to logout, " + username + "?");
+    function confirmLogout(username) {
+        var confirmation = confirm("Are you sure you want to logout, " + username + "?");
 
-    if (confirmation) {
-        window.location.href = "/logout";
-    } else {
-        window.location.href = "/api/movies";
+        if (confirmation) {
+            window.location.href = "/logout";
+        } else {
+            window.location.href = "/api/movies";
+        }
     }
-}
 </script>
+
 </html>

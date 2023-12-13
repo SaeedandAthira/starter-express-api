@@ -1,7 +1,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{movies.length}} Movies</title>
+    <title>Movies</title>
     <style>
         .movie-card {
             border: 1px solid #ccc;
@@ -18,14 +18,14 @@
 </head>
 
 <body>
-    <h1>{{movies.length}} Movies</h1>
+    <h1>{{movies.length}} Movies in this page</h1>
 
     {{#if (and (gt totalPages) (gt movies.length))}}
     <a href="/api/movies/?page={{add page}}&perPage={{perPage}}&title={{title}}">
         <button type="submit">Next</button></a><br><br>
     <b>Page {{page}} of Page {{totalPages}}</b>
     {{else}}
-    
+
     <p>No movies found further.</p>
     <a href="/api/movies/?page=1&perPage={{perPage}}&title={{title}}">
         <button type="submit">Next</button></a><br><br>
@@ -37,12 +37,12 @@
     <div class="movie-card">
         <h2>{{this.title}}</h2>
 
-        <!-- showing no bg image when db has no poster -->
+        <!-- showing no bg image when db has no poster 
         {{log this.MovieId}}
         {{log this.poster}}
         {{log this.title}}
         {{log this.onerror}}
-        {{log '-----'}}
+        {{log '-----'}}-->
         <img class="movie-poster" src="{{this.poster}}" alt="{{this.title}} Poster " onerror="this.onerror=null;this.src='/images/nopic.png';" style="max-width: 300px;">
 
         <p>Plot: {{plot}}</p>
